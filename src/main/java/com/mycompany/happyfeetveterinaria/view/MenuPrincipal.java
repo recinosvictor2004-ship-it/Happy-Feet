@@ -1,5 +1,6 @@
 package com.mycompany.happyfeetveterinaria.view;
 
+import com.mycompany.happyfeetveterinaria.controller.CitaController;
 import java.util.Scanner;
 
 import com.mycompany.happyfeetveterinaria.model.entities.Dueno;
@@ -7,17 +8,22 @@ import com.mycompany.happyfeetveterinaria.service.DuenoService;
 
 import com.mycompany.happyfeetveterinaria.model.entities.Mascota;
 import com.mycompany.happyfeetveterinaria.service.MascotaService;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class MenuPrincipal {
 
     private final Scanner scanner;
     private final DuenoService duenoService;
+    private final CitaController citaController;
 
-    public MenuPrincipal() {
+    
+public MenuPrincipal() {
+    scanner = new Scanner(System.in);
+    duenoService = new DuenoService();
+    citaController = new CitaController();
+}
 
-        scanner = new Scanner(System.in);
-        duenoService = new DuenoService();
-    }
 
     public void mostrarMenu() {
 
@@ -49,7 +55,7 @@ public class MenuPrincipal {
                     System.out.println("Módulo Veterinarios");
 
                 case 4 ->
-                    System.out.println("Módulo Citas");
+                    menuCitas();
 
                 case 0 ->
                     System.out.println("Hasta luego");
@@ -223,4 +229,59 @@ public class MenuPrincipal {
 
     } while (opcion != 0);
 }
+    
+ private void menuCitas() {
+    int opcion;
+    do {
+        System.out.println("\n===== GESTIÓN DE CITAS =====");
+        System.out.println(
+                "1. Buscar Primer Horario Disponible");
+        System.out.println(
+                "0. Regresar");
+        System.out.print(
+                "Seleccione una opción: ");
+        opcion = scanner.nextInt();
+        scanner.nextLine();
+        switch (opcion) {
+            case 1 ->
+                buscarHorarioDisponible();
+            case 0 ->
+                System.out.println(
+                        "Regresando...");
+            default ->
+                System.out.println(
+                        "Opción inválida");
+        }
+    } while (opcion != 0);
+}
+   
+ private void buscarHorarioDisponible() {
+    try {
+        System.out.print(
+                "Ingrese fecha (yyyy-MM-dd): ");
+        String entrada =
+                scanner.nextLine();
+        LocalDate fecha =
+                LocalDate.parse(
+                        entrada);
+        LocalDateTime horario =
+                citaController
+                        .buscarPrimerHorarioDisponible(
+                                fecha);
+        if (horario != null) {
+            System.out.println(
+                    "El primer horario disponible para el día "
+                            + fecha
+                            + " es a las "
+                            + horario.toLocalTime());
+        } else {
+            System.out.println(
+                    "No hay horarios disponibles para el día seleccionado. La agenda está completa.");
+        }
+    } catch (Exception e) {
+        System.out.println(
+                "Formato de fecha inválido. Intente nuevamente.");
+    }
+}
+   
 }

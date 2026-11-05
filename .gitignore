@@ -1,0 +1,8 @@
+target/
+
+*.class
+
+.idea/
+.visualcode/
+
+*.log
